@@ -7,11 +7,17 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	v1 "k8s.io/api/core/v1"
 	"time"
 )
 
+var nodes *v1.NodeList
+
 func showNodes(_ fyne.Window) fyne.CanvasObject {
-	nodes, err := k8s.ListNode()
+	var err error
+	stack := container.NewStack()
+
+	nodes, err = k8s.ListNode()
 	if err != nil {
 		panic(err.Error())
 	}
@@ -22,8 +28,6 @@ func showNodes(_ fyne.Window) fyne.CanvasObject {
 	}
 
 	icon := widget.NewIcon(nil)
-	label := widget.NewLabel("Select An Item From The List")
-	hbox := container.NewHBox(label)
 
 	list := widget.NewList(
 		func() int {
@@ -48,12 +52,22 @@ func showNodes(_ fyne.Window) fyne.CanvasObject {
 		},
 	)
 	list.OnSelected = func(id widget.ListItemID) {
-		label.SetText(data[id])
-		icon.SetResource(theme.ComputerIcon())
+		if nodes != nil {
+			n, err := k8s.DescribeNode(nodes.Items[id].Name)
+			if err != nil {
+				panic(err.Error())
+			}
+			data := k8s.BuildNodeTree(n)
+			tree := widget.NewTreeWithStrings(data)
+			tree.OpenAllBranches()
+			stack.Objects = nil
+			stack.Add(tree)
+			icon.SetResource(theme.ComputerIcon())
+		}
 	}
 	list.OnUnselected = func(id widget.ListItemID) {
-		label.SetText("Select An Item From The List")
 		icon.SetResource(nil)
 	}
-	return container.NewHSplit(list, container.NewCenter(hbox))
+
+	return container.NewHSplit(list, stack)
 }

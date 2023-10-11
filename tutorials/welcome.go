@@ -25,11 +25,9 @@ func parseURL(urlStr string) *url.URL {
 func welcomeScreen(win fyne.Window) fyne.CanvasObject {
 	logo := canvas.NewImageFromResource(data.FyneLogoTransparent)
 	logo.FillMode = canvas.ImageFillContain
-	if fyne.CurrentDevice().IsMobile() {
-		logo.SetMinSize(fyne.NewSize(192, 192))
-	} else {
-		logo.SetMinSize(fyne.NewSize(256, 256))
-	}
+
+	logo.SetMinSize(fyne.NewSize(512, 512))
+	
 	openFile := widget.NewButton("Load KUBECONFIG", func() {
 		fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
 			if err != nil {
@@ -40,9 +38,7 @@ func welcomeScreen(win fyne.Window) fyne.CanvasObject {
 				log.Println("Cancelled")
 				return
 			}
-
 			k8s.LoadKubeconfig(reader)
-			k8s.ListPod()
 		}, win)
 		fd.SetFilter(storage.NewExtensionFileFilter([]string{".yaml"}))
 		fd.Show()

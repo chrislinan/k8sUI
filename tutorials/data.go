@@ -25,6 +25,11 @@ var (
 			makeAnimationScreen,
 			true,
 		},
+		"pods": {"Pods",
+			"List all the Pods in the cluster.",
+			showPods,
+			true,
+		},
 		"icons": {"Theme Icons",
 			"Browse the embedded icons.",
 			iconScreen,
@@ -135,6 +140,12 @@ var (
 			collectionScreen,
 			true,
 		},
+		"workloads": {"WorkLoads",
+			"List all the WorkLoads in the cluster.",
+			showWorkloads,
+			true,
+		},
+
 		"list": {"List",
 			"A vertical arrangement of cached elements with the same styling.",
 			makeListTab,
@@ -179,9 +190,10 @@ var (
 
 	// TutorialIndex  defines how our tutorials should be laid out in the index tree
 	TutorialIndex = map[string][]string{
-		"":            {"welcome", "nodes", "animations", "icons", "widgets", "collections", "containers", "dialogs", "windows", "binding", "advanced"},
+		"":            {"welcome", "nodes", "workloads", "animations", "icons", "widgets", "collections", "containers", "dialogs", "windows", "binding", "advanced"},
 		"collections": {"list", "table", "tree", "gridwrap"},
 		"containers":  {"apptabs", "border", "box", "center", "doctabs", "grid", "scroll", "split"},
 		"widgets":     {"accordion", "button", "card", "entry", "form", "input", "progress", "text", "toolbar"},
+		"workloads":   {"pods", "deployments", "jobs", "cronjobs", "sts"},
 	}
 )

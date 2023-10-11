@@ -3,8 +3,10 @@ package main
 
 import (
 	"K8SGUI/data"
+	"K8SGUI/k8s"
 	"K8SGUI/tutorials"
 	"fmt"
+	"fyne.io/fyne/v2/dialog"
 	"log"
 	"net/url"
 
@@ -37,7 +39,6 @@ func main() {
 	intro := widget.NewLabel("An introduction would probably go\nhere, as well as a")
 	intro.Wrapping = fyne.TextWrapWord
 	setTutorial := func(t tutorials.Tutorial) {
-
 		title.SetText(t.Title)
 		intro.SetText(t.Intro)
 
@@ -46,12 +47,11 @@ func main() {
 	}
 
 	tutorial := container.NewBorder(container.NewVBox(title, widget.NewSeparator(), intro), nil, nil, nil, content)
-
 	split := container.NewHSplit(makeNav(setTutorial, false), tutorial)
 	split.Offset = 0.2
 	w.SetContent(split)
 
-	w.Resize(fyne.NewSize(1280, 960))
+	w.Resize(fyne.NewSize(1920, 1080))
 	w.ShowAndRun()
 }
 
@@ -210,6 +210,11 @@ func makeNav(setTutorial func(tutorial tutorials.Tutorial), loadPrevious bool) f
 		OnSelected: func(uid string) {
 			if t, ok := tutorials.Tutorials[uid]; ok {
 				if unsupportedTutorial(t) {
+					return
+				}
+				if t.Title != "Welcome" && k8s.Clientset == nil {
+					log.Println("Please load KUBECONFIG first")
+					dialog.ShowInformation("Information", "Please load KUBECONFIG first", topWindow)
 					return
 				}
 				a.Preferences().SetString(preferenceCurrentTutorial, uid)

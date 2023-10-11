@@ -25,7 +25,7 @@ func LoadKubeconfig(f fyne.URIReadCloser) {
 	if err != nil {
 		panic(err.Error())
 	}
-	clientset, err = kubernetes.NewForConfig(config)
+	Clientset, err = kubernetes.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
 	}
