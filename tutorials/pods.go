@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	v1 "k8s.io/api/core/v1"
@@ -44,11 +45,17 @@ func showPods(_ fyne.Window) fyne.CanvasObject {
 			return len(podList)
 		},
 		func() fyne.CanvasObject {
-			return container.NewHBox(widget.NewIcon(theme.ComputerIcon()), widget.NewLabel("Template Object"))
+			return container.NewHBox(widget.NewIcon(theme.DocumentIcon()), widget.NewLabel("Template Object"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
-			age := time.Now().Sub(podList[id].ObjectMeta.GetCreationTimestamp().Time).Hours() / 24
-			content := podList[id].Name + "\t" + string(podList[id].Status.Phase) + "\t" + fmt.Sprintf("%.0f days", age)
+			hours := time.Now().Sub(podList[id].ObjectMeta.GetCreationTimestamp().Time).Hours()
+			age := ""
+			if hours < 24 {
+				age = fmt.Sprintf("%.0f hours", time.Now().Sub(podList[id].ObjectMeta.GetCreationTimestamp().Time).Hours())
+			} else {
+				age = fmt.Sprintf("%.0f days", time.Now().Sub(podList[id].ObjectMeta.GetCreationTimestamp().Time).Hours()/24)
+			}
+			content := podList[id].Name + "\t" + string(podList[id].Status.Phase) + "\t" + age
 			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(content)
 		},
 	)
@@ -63,7 +70,7 @@ func showPods(_ fyne.Window) fyne.CanvasObject {
 			//tree.OpenAllBranches()
 			//stack.Objects = nil
 			//stack.Add(tree)
-			icon.SetResource(theme.ComputerIcon())
+			icon.SetResource(theme.DocumentIcon())
 		}
 	}
 	list.OnUnselected = func(id widget.ListItemID) {
@@ -73,8 +80,19 @@ func showPods(_ fyne.Window) fyne.CanvasObject {
 		podList = getPodList(selectedNs, podName)
 		list.Refresh()
 	})
-	split := container.NewVSplit(container.NewHBox(widget.NewLabel("Namespace:"), namespace, widget.NewLabel("Search:"), search, load), container.NewHSplit(list, stack))
-	split.Offset = 0.03
+	form := widget.NewForm()
+	form.Append("Namespace:", namespace)
+	form.Append("Search:", search)
+
+	center := container.NewGridWithColumns(5,
+		container.NewCenter(widget.NewLabel("Namespace:")),
+		namespace,
+		container.NewCenter(widget.NewLabel("Search:")),
+		search,
+		load,
+	)
+	topContainer := container.NewGridWithColumns(2, center, layout.NewSpacer())
+	split := container.NewBorder(topContainer, nil, nil, nil, container.NewHSplit(list, stack))
 	return split
 }
 

@@ -186,11 +186,16 @@ var (
 			advancedScreen,
 			true,
 		},
+		"terminal": {"Terminal",
+			"Debug and advanced information.",
+			terminalScreen,
+			true,
+		},
 	}
 
 	// TutorialIndex  defines how our tutorials should be laid out in the index tree
 	TutorialIndex = map[string][]string{
-		"":            {"welcome", "nodes", "workloads", "animations", "icons", "widgets", "collections", "containers", "dialogs", "windows", "binding", "advanced"},
+		"":            {"welcome", "nodes", "workloads", "animations", "icons", "widgets", "collections", "containers", "dialogs", "windows", "binding", "advanced", "terminal"},
 		"collections": {"list", "table", "tree", "gridwrap"},
 		"containers":  {"apptabs", "border", "box", "center", "doctabs", "grid", "scroll", "split"},
 		"widgets":     {"accordion", "button", "card", "entry", "form", "input", "progress", "text", "toolbar"},

@@ -38,7 +38,13 @@ func showNodes(_ fyne.Window) fyne.CanvasObject {
 			return container.NewHBox(widget.NewIcon(theme.ComputerIcon()), widget.NewLabel("Template Object"))
 		},
 		func(id widget.ListItemID, item fyne.CanvasObject) {
-			age := time.Now().Sub(nodes.Items[id].ObjectMeta.GetCreationTimestamp().Time).Hours() / 24
+			hours := time.Now().Sub(nodes.Items[id].ObjectMeta.GetCreationTimestamp().Time).Hours()
+			age := ""
+			if hours < 24 {
+				age = fmt.Sprintf("%.0f hours", time.Now().Sub(nodes.Items[id].ObjectMeta.GetCreationTimestamp().Time).Hours())
+			} else {
+				age = fmt.Sprintf("%.0f days", time.Now().Sub(nodes.Items[id].ObjectMeta.GetCreationTimestamp().Time).Hours()/24)
+			}
 			condition := ""
 			for _, cond := range nodes.Items[id].Status.Conditions {
 				if cond.Status == "True" {
@@ -47,7 +53,7 @@ func showNodes(_ fyne.Window) fyne.CanvasObject {
 			}
 			content := nodes.Items[id].Name + "\t" + string(nodes.Items[id].Status.Phase) + "\t" +
 				nodes.Items[id].Status.NodeInfo.KubeletVersion + "\t" + condition + "\t" +
-				fmt.Sprintf("%.0f days", age)
+				age
 			item.(*fyne.Container).Objects[1].(*widget.Label).SetText(content)
 		},
 	)

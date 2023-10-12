@@ -27,7 +27,7 @@ func welcomeScreen(win fyne.Window) fyne.CanvasObject {
 	logo.FillMode = canvas.ImageFillContain
 
 	logo.SetMinSize(fyne.NewSize(512, 512))
-	
+
 	openFile := widget.NewButton("Load KUBECONFIG", func() {
 		fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
 			if err != nil {
@@ -41,6 +41,7 @@ func welcomeScreen(win fyne.Window) fyne.CanvasObject {
 			k8s.LoadKubeconfig(reader)
 		}, win)
 		fd.SetFilter(storage.NewExtensionFileFilter([]string{".yaml"}))
+		fd.Resize(fyne.NewSize(800, 600))
 		fd.Show()
 	})
 
