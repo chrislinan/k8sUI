@@ -61,15 +61,13 @@ func showPods(_ fyne.Window) fyne.CanvasObject {
 	)
 	list.OnSelected = func(id widget.ListItemID) {
 		if podList != nil {
-			//n, err := k8s.DescribeNode(pods.Items[id].Name)
-			//if err != nil {
-			//	panic(err.Error())
-			//}
-			//data := k8s.BuildNodeTree(n)
-			//tree := widget.NewTreeWithStrings(data)
-			//tree.OpenAllBranches()
-			//stack.Objects = nil
-			//stack.Add(tree)
+			result, err := k8s.DescribePod(selectedNs, podList[id].Name)
+			if err != nil {
+			}
+			rich := widget.NewRichTextWithText(result)
+			rich.Scroll = container.ScrollBoth
+			stack.RemoveAll()
+			stack.Add(rich)
 			icon.SetResource(theme.DocumentIcon())
 		}
 	}

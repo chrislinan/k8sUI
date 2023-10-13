@@ -26,7 +26,7 @@ func welcomeScreen(win fyne.Window) fyne.CanvasObject {
 	logo := canvas.NewImageFromResource(data.FyneLogoTransparent)
 	logo.FillMode = canvas.ImageFillContain
 
-	logo.SetMinSize(fyne.NewSize(512, 512))
+	logo.SetMinSize(fyne.NewSize(400, 400))
 
 	openFile := widget.NewButton("Load KUBECONFIG", func() {
 		fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {

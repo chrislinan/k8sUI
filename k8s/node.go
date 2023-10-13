@@ -4,14 +4,19 @@ import (
 	"context"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/kubectl/pkg/describe"
 )
 
 func ListNode() (*v1.NodeList, error) {
 	return Clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 }
 
-func DescribeNode(name string) (*v1.Node, error) {
-	return Clientset.CoreV1().Nodes().Get(context.TODO(), name, metav1.GetOptions{})
+func DescribeNode(name string) (string, error) {
+	d := describe.NodeDescriber{
+		Interface: Clientset,
+	}
+	result, err := d.Describe("all", name, describe.DescriberSettings{})
+	return result, err
 }
 
 func BuildNodeTree(n *v1.Node) map[string][]string {

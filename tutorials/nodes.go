@@ -59,15 +59,18 @@ func showNodes(_ fyne.Window) fyne.CanvasObject {
 	)
 	list.OnSelected = func(id widget.ListItemID) {
 		if nodes != nil {
-			n, err := k8s.DescribeNode(nodes.Items[id].Name)
+			result, err := k8s.DescribeNode(nodes.Items[id].Name)
 			if err != nil {
 				panic(err.Error())
 			}
-			data := k8s.BuildNodeTree(n)
-			tree := widget.NewTreeWithStrings(data)
-			tree.OpenAllBranches()
-			stack.Objects = nil
-			stack.Add(tree)
+			rich := widget.NewRichTextWithText(result)
+			rich.Scroll = container.ScrollBoth
+			//data := k8s.BuildNodeTree(n)
+			//tree := widget.NewTreeWithStrings(data)
+			//tree.OpenAllBranches()
+			stack.RemoveAll()
+			//stack.Add(tree)
+			stack.Add(rich)
 			icon.SetResource(theme.ComputerIcon())
 		}
 	}

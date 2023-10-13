@@ -7,6 +7,9 @@ import (
 	"K8SGUI/tutorials"
 	"fmt"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/theme"
+	xtheme "fyne.io/x/fyne/theme"
+	"github.com/fyne-io/terminal"
 	"log"
 	"net/url"
 
@@ -15,7 +18,6 @@ import (
 	"fyne.io/fyne/v2/cmd/fyne_settings/settings"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/driver/desktop"
-	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -25,6 +27,7 @@ var topWindow fyne.Window
 
 func main() {
 	a := app.NewWithID("io.fyne.demo")
+	a.Settings().SetTheme(xtheme.AdwaitaTheme())
 	a.SetIcon(data.FyneLogo)
 	makeTray(a)
 	logLifecycle(a)
@@ -46,8 +49,15 @@ func main() {
 		content.Refresh()
 	}
 
+	t := terminal.New()
+	go func() {
+		_ = t.RunLocalShell()
+	}()
+
 	tutorial := container.NewBorder(container.NewVBox(title, widget.NewSeparator(), intro), nil, nil, nil, content)
-	split := container.NewHSplit(makeNav(setTutorial, false), tutorial)
+	masterScreen := container.NewVSplit(tutorial, t)
+	masterScreen.SetOffset(0.8)
+	split := container.NewHSplit(makeNav(setTutorial, false), masterScreen)
 	split.Offset = 0.2
 	w.SetContent(split)
 
@@ -228,16 +238,7 @@ func makeNav(setTutorial func(tutorial tutorials.Tutorial), loadPrevious bool) f
 		tree.Select(currentPref)
 	}
 
-	themes := container.NewGridWithColumns(2,
-		widget.NewButton("Dark", func() {
-			a.Settings().SetTheme(theme.DarkTheme())
-		}),
-		widget.NewButton("Light", func() {
-			a.Settings().SetTheme(theme.LightTheme())
-		}),
-	)
-
-	return container.NewBorder(nil, themes, nil, nil, tree)
+	return tree
 }
 
 func shortcutFocused(s fyne.Shortcut, w fyne.Window) {
